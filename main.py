@@ -115,10 +115,7 @@ class Ui_Image_Editor(object):
         filenames = os.listdir(workdir)
         filenames_filtered = []
         for file in filenames:
-            if file.__contains__('.'):
-                file = file.split('.')
-            if file[1] == 'jpg' or file[1] == 'jpeg' or file[1] == 'png' or file[1] == 'pdf' or file[1] == 'gif':
-                file = file[1] + file[2]
+            if file.endswith(('.jpg', '.png','.gif', '.jpeg', '.JPG', '.PNG')):
                 filenames_filtered.append(file)
         self.list.addItems(filenames_filtered)
 
