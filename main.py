@@ -2,55 +2,76 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PIL import Image, ImageFilter, ImageEnhance
 import os
 
-class ImageEditor():
-    def __init__(self):
-        self.directory = None
-        self.original = None
-        self.edited = None
-        self.editedphotos = []
-
-    def open(self, directory:str):
-        self.directory = directory
-        self.original = Image.open(f'{self.directory}')
-        self.edited = self.original
-
-    def close(self):
-        self.directory = None
-        self.original = None
+workdir = None
 
 
-    def show_original(self):
-        self.original.show()
+# class ImageEditor:
+#     def __init__(self, filename):
+#         self.dir = None
+#         self.original = None
+#         self.edited = None
+#         self.editedphotos = []
+
+#     def open(self, directory:str):
+#         self.dir = directory
+#         self.original = Image.open(f'{self.dir}')
+#         self.edited = self.original
+
+#     def close(self):
+#         self.dir = None
+#         self.original = None
+
+
+#     # def show_original(self):
+#     #     self.original.show()
     
-    def show_edited(self):
-        self.edited.show()
+#     def show(self, label:QtWidgets.QLabel):
+#         label.setText(self.edited)
 
 
-    def do_mirror(self):
-        self.edited = self.edited.transpose(Image.FLIP_LEFT_RIGHT)
+#     def do_mirror(self):
+#         self.edited = self.edited.transpose(Image.FLIP_LEFT_RIGHT)
     
-    def do_gray(self):
-        self.edited = self.original.convert('L')
+#     def do_gray(self):
+#         self.edited = self.original.convert('L')
 
-    def do_turn_90(self):
-        self.edited = self.edited.transpose(Image.ROTATE_90)
+#     def do_turn_90(self):
+#         self.edited = self.edited.transpose(Image.ROTATE_90)
     
-    def do_turn_180(self):
-        self.edited = self.edited.transpose(Image.ROTATE_180)
+#     def do_turn_180(self):
+#         self.edited = self.edited.transpose(Image.ROTATE_180)
 
-    def do_blur(self):
-        self.edited = self.edited.filter(ImageFilter.BLUR)
+#     def do_blur(self):
+#         self.edited = self.edited.filter(ImageFilter.BLUR)
 
-    def do_crop(self, coordinates:tuple):
-        self.edited = self.edited.crop(coordinates)
+#     def do_crop(self, coordinates:tuple):
+#         self.edited = self.edited.crop(coordinates)
 
-    def save(self, name):
-        self.edited.save(name)
+#     def save(self, name):
+#         self.edited.save(name)
 
-        self.editedphotos.append(self.edited)
+#         self.editedphotos.append(self.edited)
 
+class Editor:
+    def __init__(self, filename):
+        self.image = None
+        self.folder = 'modifyed'
+        self.filename = filename
 
-editor = ImageEditor()
+    def load_image(self):
+        path = os.path.join(workdir, self.filename)
+        self.image = Image.open(path)
+    
+    def showImage(self):
+        path = os.path.join(workdir, self.filename)
+        ui.Image_lb.hide()
+        pixmap = QtGui.QPixmap(path)
+        w, h = ui.Image_lb.width(), ui.Image_lb.height()
+        # pixmap = pixmap.scaled(w, h, QtCore.Qt.KeepAspectRatio)
+        ui.Image_lb.setPixmap(pixmap)
+        ui.Image_lb.show()
+
+# editor = ImageEditor()
 
 class Ui_Image_Editor(object):
     def setupUi(self, Image_Editor):
@@ -84,13 +105,13 @@ class Ui_Image_Editor(object):
         self.papka_btn = QtWidgets.QPushButton(self.centralwidget)
         self.papka_btn.setGeometry(QtCore.QRect(20, 20, 211, 41))
         self.papka_btn.setObjectName("papka_btn")
-        self.Image = QtWidgets.QLabel(self.centralwidget)
-        self.Image.setGeometry(QtCore.QRect(266, 32, 511, 601))
+        self.Image_lb = QtWidgets.QLabel(self.centralwidget)
+        self.Image_lb.setGeometry(QtCore.QRect(266, 32, 511, 601))
         font = QtGui.QFont()
         font.setPointSize(12)
-        self.Image.setFont(font)
-        self.Image.setAlignment(QtCore.Qt.AlignCenter)
-        self.Image.setObjectName("Image")
+        self.Image_lb.setFont(font)
+        self.Image_lb.setAlignment(QtCore.Qt.AlignCenter)
+        self.Image_lb.setObjectName("Image")
         Image_Editor.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(Image_Editor)
@@ -105,19 +126,29 @@ class Ui_Image_Editor(object):
         self.L_btn.setText(_translate("Image_Editor", "Ч/Б"))
         self.rizkist_btn.setText(_translate("Image_Editor", "Різкість"))
         self.papka_btn.setText(_translate("Image_Editor", "Папка"))
-        self.Image.setText(_translate("Image_Editor", "Image"))
+        self.Image_lb.setText(_translate("Image_Editor", "Image"))
 
         self.papka_btn.clicked.connect(self.open_folder)
+        self.list.currentItemChanged.connect(self.choose_image)
 
     def open_folder(self):
+        global workdir
         self.list.clear()
         workdir = QtWidgets.QFileDialog.getExistingDirectory()
         filenames = os.listdir(workdir)
         filenames_filtered = []
         for file in filenames:
-            if file.endswith(('.jpg', '.png','.gif', '.jpeg', '.JPG', '.PNG')):
+            if file.endswith(('.jpg', '.png','.gif', '.jpeg', '.JPG', '.PNG', '.bmp')):
                 filenames_filtered.append(file)
         self.list.addItems(filenames_filtered)
+    
+    def choose_image(self):
+        filename = self.list.currentItem().text()
+        Image_Editor = Editor(filename)
+        Image_Editor.load_image()
+        Image_Editor.showImage()
+
+
 
 if __name__ == "__main__":
     import sys
