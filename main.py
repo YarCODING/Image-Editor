@@ -3,8 +3,6 @@ from PIL import Image, ImageFilter, ImageEnhance
 import os
 
 workdir = None
-
-
 # class ImageEditor:
 #     def __init__(self, filename):
 #         self.dir = None
@@ -67,9 +65,19 @@ class Editor:
         ui.Image_lb.hide()
         pixmap = QtGui.QPixmap(path)
         w, h = ui.Image_lb.width(), ui.Image_lb.height()
-        # pixmap = pixmap.scaled(w, h, QtCore.Qt.KeepAspectRatio)
+        pixmap = pixmap.scaled(w, h, QtCore.Qt.KeepAspectRatio)
         ui.Image_lb.setPixmap(pixmap)
         ui.Image_lb.show()
+    
+    def do_mirror(self):
+        self.image = self.image.transpose(Image.FLIP_LEFT_RIGHT)
+    def do_left(self):
+        self.image = self.image.transpose(Image.ROTATE_180)
+    def do_right(self):
+        self.image = self.image.transpose(Image.ROTATE_90)
+    def do_L(self):
+        self.image = self.image.convert('L')
+    
 
 # editor = ImageEditor()
 
@@ -129,7 +137,8 @@ class Ui_Image_Editor(object):
         self.Image_lb.setText(_translate("Image_Editor", "Image"))
 
         self.papka_btn.clicked.connect(self.open_folder)
-        self.list.currentItemChanged.connect(self.choose_image)
+        self.list.clicked.connect(self.choose_image)
+        # self.mirror_btn.clicked.connect(self.do_mirror)
 
     def open_folder(self):
         global workdir
@@ -148,6 +157,14 @@ class Ui_Image_Editor(object):
         Image_Editor.load_image()
         Image_Editor.showImage()
 
+    # def do_mirror(self):
+    #     filename = self.list.currentItem().text()
+    #     Image_Editor = Editor(filename)
+    #     Image_Editor.load_image()
+    #     Image_Editor.do_mirror()
+    #     Image_Editor.showImage()
+
+        
 
 
 if __name__ == "__main__":
