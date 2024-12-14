@@ -120,6 +120,10 @@ class Ui_Image_Editor(object):
         self.Image_lb.setFont(font)
         self.Image_lb.setAlignment(QtCore.Qt.AlignCenter)
         self.Image_lb.setObjectName("Image")
+        self.save_btn = QtWidgets.QPushButton(self.centralwidget)
+        self.save_btn.setGeometry(QtCore.QRect(50, 650, 131, 41))
+        self.save_btn.setStyleSheet("")
+        self.save_btn.setObjectName("save_btn")
         Image_Editor.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(Image_Editor)
@@ -135,6 +139,7 @@ class Ui_Image_Editor(object):
         self.rizkist_btn.setText(_translate("Image_Editor", "Різкість"))
         self.papka_btn.setText(_translate("Image_Editor", "Папка"))
         self.Image_lb.setText(_translate("Image_Editor", "Image"))
+        self.save_btn.setText(_translate("Image_Editor", "Зберегти"))
 
         self.papka_btn.clicked.connect(self.open_folder)
         self.list.clicked.connect(self.choose_image)
